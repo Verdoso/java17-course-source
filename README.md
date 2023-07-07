@@ -1,1 +1,1 @@
-Proyecto de demostración para la formación en Java 8 de la Oficina Web
+Demo project to use as support during the course to update from Java 8 to Java 17 at the UIB

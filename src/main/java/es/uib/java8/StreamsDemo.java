@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.math.NumberUtils;
 
-import es.uib.academium.db.model.agora.EstudiBasic;
+import es.uib.java17.model.Study;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -23,90 +23,90 @@ public class StreamsDemo {
   private static final String SEPARATOR = "------";
 
   public static void main(String[] args) {
-    List<EstudiBasic> estudis = new ArrayList<>();
+    List<Study> studies = new ArrayList<>();
     try (ObjectInputStream theOIS = new ObjectInputStream(StreamsDemo.class.getClassLoader()
-        .getResourceAsStream("Estudis.ser"))) {
-      EstudiBasic read = null;
-      while ((read = (EstudiBasic) theOIS.readObject()) != null) {
-        estudis.add(read);
+        .getResourceAsStream("Studies.ser"))) {
+      Study read = null;
+      while ((read = (Study) theOIS.readObject()) != null) {
+        studies.add(read);
       }
     } catch (EOFException e) {
-      log.debug("Ya los hemos leido todos");
+      log.debug("all studies read");
     } catch (Exception e) {
-      log.error("Error leyendo estudios serializados", e);
+      log.error("Error reading serialised studies", e);
     }
-    log.info("Estudios leidos: {}", estudis.size());
+    log.info("Studies read: {}", studies.size());
     //
 
-    // Recorrido simple
+    // Simply looping
     log.info(StreamsDemo.SEPARATOR);
-    log.info("Recorrido simple");
-    estudis.forEach(estudi -> log.info("{}", estudi));
-    log.info(StreamsDemo.SEPARATOR);
-
-    // Recorrer x elementos (limit)
-    log.info("Limitado");
-    estudis.stream()
-        .limit(2)
-        .forEach(estudi -> log.info(estudi.getNomCatala()));
+    log.info("Simple loop, meh");
+    studies.forEach(study -> log.info("{}", study));
     log.info(StreamsDemo.SEPARATOR);
 
-    // Transformar (map)
-    log.info("Limitado y usando method handles");
-    estudis.stream()
+    // Looping over x elements (limit)
+    log.info("Just some elements");
+    studies.stream()
         .limit(2)
-        .map(EstudiBasic::getNomCatala)
+        .forEach(study -> log.info(study.getName()));
+    log.info(StreamsDemo.SEPARATOR);
+
+    // Transform (map)
+    log.info("Just some elements and using method handles");
+    studies.stream()
+        .limit(2)
+        .map(Study::getName)
         .forEach(log::info);
     log.info(StreamsDemo.SEPARATOR);
 
-    // Ordenar (sorted)
-    log.info("Ordenado, limitado y usando method handles");
-    estudis.stream()
-        .map(EstudiBasic::getNomCatala)
+    // Sort (sorted)
+    log.info("Sorting, just some elements and using method handles");
+    studies.stream()
+        .map(Study::getName)
         .sorted()
         .limit(2)
         .forEach(log::info);
     log.info(StreamsDemo.SEPARATOR);
 
-    // Filtrar (filter)
-    log.info("Filtrado, ordenado, limitado y usando method handles");
-    estudis.stream()
-        .filter(e -> "O".equals(e.getDurada()
-            .getCicle()))
-        .map(EstudiBasic::getNomCatala)
+    // Filter (filter)
+    log.info("Filtering, sorting, just some elements and using method handles");
+    studies.stream()
+        .filter(e -> "O".equals(e.getDuration()
+            .getStudyType()))
+        .map(Study::getName)
         .sorted()
         .limit(2)
         .forEach(log::info);
     log.info(StreamsDemo.SEPARATOR);
 
-    // Filtros con predicados
-    log.info("Filtrado quitando nulos, con predicado, ordenado, limitado y usando method handles");
-    final Predicate<? super EstudiBasic> esUnMaster = e -> "O".equals(e.getDurada()
-        .getCicle());
-    estudis.stream()
-        .filter(esUnMaster)
-        .map(EstudiBasic::getNomCatala)
+    // Filters with predicates
+    log.info("Filtering out nulls, with a predicate, sort, only a limited number and using method handles");
+    final Predicate<? super Study> itsAMaster = e -> e.getDuration() != null && "O".equals(e.getDuration()
+        .getStudyType());
+    studies.stream()
+        .filter(itsAMaster)
+        .map(Study::getName)
         .filter(Objects::nonNull)
         .sorted()
         .limit(2)
         .forEach(log::info);
     log.info(StreamsDemo.SEPARATOR);
 
-    // Contar (count)
-    log.info("Filtrar y contar: {}", estudis.stream()
-        .filter(esUnMaster)
+    // Count (count)
+    log.info("Filter and count: {}", studies.stream()
+        .filter(itsAMaster)
         .count());
     log.info(StreamsDemo.SEPARATOR);
 
-    // Comprobar existencia (anyMatch)
-    log.info("Filtrar y comprobar si hay: {}", estudis.stream()
-        .anyMatch(esUnMaster));
+    // Check for existence (anyMatch)
+    log.info("Check for existence: {}", studies.stream()
+        .anyMatch(itsAMaster));
     log.info(StreamsDemo.SEPARATOR);
 
-    // Convertir en lista (toList
-    log.info("Crear una lista con los resultados");
-    List<EstudiBasic> masters = estudis.stream()
-        .filter(esUnMaster)
+    // Transform to list (toList)
+    log.info("Transform to list");
+    List<Study> masters = studies.stream()
+        .filter(itsAMaster)
         // To get a guaranteed mutable List
         // .collect(Collectors.toCollection(ArrayList::new))
         // To "usually" get a mutable List
@@ -115,43 +115,44 @@ public class StreamsDemo {
     //
     ;
     masters.stream()
-        .map(EstudiBasic::getNomCatala)
+        .map(Study::getName)
         .forEach(log::info);
     log.info(StreamsDemo.SEPARATOR);
 
-    // Convertir en mapa
-    log.info("Crear un mapa con los resultados");
-    Map<String, EstudiBasic> mastersMap = estudis.stream()
-        .filter(esUnMaster)
-        .collect(Collectors.toMap(EstudiBasic::getCodi, Function.identity()));
+    // Transform to map
+    log.info("Transform to a map");
+    Map<String, Study> mastersMap = studies.stream()
+        .filter(itsAMaster)
+        .collect(Collectors.toMap(Study::getId, Function.identity()));
     mastersMap.forEach((key,
-        value) -> log.info("key: {}, value: {}", key, value.getNomCatala()));
+        value) -> log.info("key: {}, value: {}", key, value.getName()));
     log.info(StreamsDemo.SEPARATOR);
 
-    // Agrupar (clave, lista de elementos segun clave)
-    log.info("Agrupar");
-    estudis.stream()
-        .collect(Collectors.groupingBy(EstudiBasic::getBranca))
+    // Group by (key, elements indexed by that key)
+    log.info("Group by");
+    studies.stream()
+        .collect(Collectors.groupingBy(Study::getBranch))
         .forEach((key,
-            value) -> log.info("Branca: {}, numero d'estudis: {}", key.getNomCatala(), value.size()));
+            value) -> log.info("Branch: {}, number of studies: {}", key.getName(), value.size()));
     log.info(StreamsDemo.SEPARATOR);
 
-    // Peek (no recomendable excepto para debug)
-    // Juntar -> p.e. Convertir lista de listas de elementos en lista de elementos
-    log.info("Echar un vistazo y juntar streams");
-    estudis.stream()
-        .collect(Collectors.groupingBy(EstudiBasic::getBranca))
+    // Peek (not recommended but for debugging purposes)
+    // Flatten -> p.e. map a "list" of "lists" of elements into a "list" of elements
+    log.info("Peek and join streams");
+    studies.stream()
+        .collect(Collectors.groupingBy(Study::getBranch))
         .entrySet()
         .stream()
-        .peek(entry -> log.info("------------ Branca -> {}", entry.getKey()
-            .getNomCatala())) // NOT RECOMMENDED; COMPILER MIGHT REMOVE IT
+        .peek(entry -> log.info("------------ Branch -> {}", entry.getKey()
+            .getName())) // NOT RECOMMENDED; COMPILER MIGHT REMOVE IT
         .flatMap(entry -> entry.getValue()
             .stream())
-        .map(EstudiBasic::getNomCatala)
+        .map(Study::getName)
         .forEach(log::info);
     log.info(StreamsDemo.SEPARATOR);
 
-    // Construir Streams simples
+    // Building simple streams
+
     // Checking with isInstance and a cast, for example
     Object willThisBeAString = "Yes, it is!";
     Stream.of(willThisBeAString, 5)
@@ -160,20 +161,20 @@ public class StreamsDemo {
         .forEach(log::info);
     log.info(StreamsDemo.SEPARATOR);
 
-    // Construir streams de enteros
+    // Integer streams, from a range
     IntStream.range(1, 10)
         .mapToObj(Integer::toString)
         .forEach(log::info);
 
-    // Juntar dos Streams y comprobar si todos cumplen condicion
+    // Join two Streams and see if all elements match a condition
     Object maybeNumber = "No number!";
     Stream<Object> primer = Stream.of(maybeNumber, 5);
     Stream<Object> segon = IntStream.range(1, 10)
         .mapToObj(Integer::toString);
-    boolean totNumeros = Stream.concat(primer, segon)
+    boolean allAreNumbers = Stream.concat(primer, segon)
         .map(Object::toString)
         .allMatch(NumberUtils::isCreatable);
-    log.info("Tot son números?: {}", totNumeros ? "Sí" : "No");
+    log.info("Are all numbers?: {}", allAreNumbers ? "Yes" : "No");
 
     // findAny, findFirst...
 

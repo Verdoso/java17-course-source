@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import es.uib.academium.db.model.agora.EstudiBasic;
+import es.uib.java17.model.Study;
 import es.uib.java8.LambdasDemo;
 import es.uib.java8.StreamsDemo;
 import lombok.extern.slf4j.Slf4j;
@@ -98,14 +98,14 @@ public class FeaturesDemo {
     log.info("take while > 13: {}",
         // Take while & negate
         IntStream.of(2, 6, 9, 54, 8, 14, 3, 54, 6, 85, 3, 9, 17, 85, 3, 9, 542, 23, 5, 72)
-            .takeWhile(LambdasDemo.MAJOR_QUE_13.negate())
+            .takeWhile(LambdasDemo.GREATER_THAN_13.negate())
             .mapToObj(Integer::toString)
             .collect(Collectors.joining(", ")));
 
     log.info("drop while > 13: {}",
         // Drop while & negate
         IntStream.of(2, 6, 9, 54, 8, 14, 3, 54, 6, 85, 3, 9, 17, 85, 3, 9, 542, 23, 5, 72)
-            .dropWhile(LambdasDemo.MAJOR_QUE_13.negate())
+            .dropWhile(LambdasDemo.GREATER_THAN_13.negate())
             .mapToObj(Integer::toString)
             .collect(Collectors.joining(", ")));
 
@@ -277,29 +277,29 @@ public class FeaturesDemo {
       }
       case UNA -> "La primera";
     };
-    log.info("Escogieron {}", resultado);
+    log.info("They chose {}", resultado);
 
     //////////////////////////
     // RECORDS
     //////////////////////////
-    record EstudySummary(String id, String description) {
-      EstudySummary {
+    record StudySummary(String id, String description) {
+      StudySummary {
         Objects.requireNonNull(id);
         Objects.requireNonNull(description);
         // No need to assign parameters!!!
       }
 
-      EstudySummary(EstudiBasic estudiBasic) {
-        this(estudiBasic.getCodi(), estudiBasic.getNomCatala());
+      StudySummary(Study study) {
+        this(study.getId(), study.getName());
       }
     }
     log.info("-".repeat(20));
     log.info("Records");
     log.info("-".repeat(20));
-    List<EstudiBasic> estudisBasics = initEstudis();
-    estudisBasics.stream()
-        .map(EstudySummary::new)
-        .map(EstudySummary::toString)
+    List<Study> studies = initStudies();
+    studies.stream()
+        .map(StudySummary::new)
+        .map(StudySummary::toString)
         .forEach(log::info);
     log.info("-".repeat(20));
     log.info("-".repeat(20));
@@ -414,20 +414,20 @@ public class FeaturesDemo {
 //    case APIErrorResponse respuestaErronea  ->
 //  }
 
-  private static List<EstudiBasic> initEstudis() {
-    List<EstudiBasic> estudis = new ArrayList<>();
+  private static List<Study> initStudies() {
+    List<Study> studies = new ArrayList<>();
     try (ObjectInputStream theOIS = new ObjectInputStream(StreamsDemo.class.getClassLoader()
-        .getResourceAsStream("Estudis.ser"))) {
-      EstudiBasic read = null;
-      while ((read = (EstudiBasic) theOIS.readObject()) != null) {
-        estudis.add(read);
+        .getResourceAsStream("Studies.ser"))) {
+      Study read = null;
+      while ((read = (Study) theOIS.readObject()) != null) {
+        studies.add(read);
       }
     } catch (EOFException e) {
-      log.debug("Ya los hemos leido todos");
+      log.debug("all studies read");
     } catch (Exception e) {
-      log.error("Error leyendo estudios serializados", e);
+      log.error("Error reading serialised studies", e);
     }
-    log.info("Estudios leidos: {}", estudis.size());
-    return estudis;
+    log.info("Studies read: {}", studies.size());
+    return studies;
   }
 }

@@ -5,6 +5,13 @@
   <groupId>es.uib.owu</groupId>
   <artifactId>java8-demo</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <m2e.apt.activation>jdt_apt</m2e.apt.activation>
+    <java.version>17</java.version>
+    <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
+  </properties>
   <build>
     <plugins>
       <plugin>
@@ -13,6 +20,13 @@
         <configuration>
           <source>17</source>
           <target>17</target>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.mapstruct</groupId>
+              <artifactId>mapstruct-processor</artifactId>
+              <version>${org.mapstruct.version}</version>
+            </path>
+          </annotationProcessorPaths>
         </configuration>
       </plugin>
     </plugins>
@@ -37,6 +51,11 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
       <version>3.12.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct</artifactId>
+      <version>${org.mapstruct.version}</version>
     </dependency>
   </dependencies>
 </project>

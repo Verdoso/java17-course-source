@@ -1,3 +1,7 @@
 .settings/
+.dbeaver/
 bin/
 target/
+.classpath
+.factorypath
+.project

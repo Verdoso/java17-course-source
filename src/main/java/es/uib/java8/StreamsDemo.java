@@ -47,14 +47,14 @@ public class StreamsDemo {
     // Looping over x elements (limit)
     log.info("Just some elements");
     studies.stream()
-        .limit(2)
+        .limit(4)
         .forEach(study -> log.info(study.getName()));
     log.info(StreamsDemo.SEPARATOR);
 
     // Transform (map)
     log.info("Just some elements and using method handles");
     studies.stream()
-        .limit(2)
+        .limit(4)
         .map(Study::getName)
         .forEach(log::info);
     log.info(StreamsDemo.SEPARATOR);
@@ -64,7 +64,7 @@ public class StreamsDemo {
     studies.stream()
         .map(Study::getName)
         .sorted()
-        .limit(2)
+        .limit(4)
         .forEach(log::info);
     log.info(StreamsDemo.SEPARATOR);
 
@@ -75,7 +75,7 @@ public class StreamsDemo {
             .getStudyType()))
         .map(Study::getName)
         .sorted()
-        .limit(2)
+        .limit(4)
         .forEach(log::info);
     log.info(StreamsDemo.SEPARATOR);
 
@@ -88,7 +88,7 @@ public class StreamsDemo {
         .map(Study::getName)
         .filter(Objects::nonNull)
         .sorted()
-        .limit(2)
+        .limit(4)
         .forEach(log::info);
     log.info(StreamsDemo.SEPARATOR);
 
